@@ -32,22 +32,22 @@ def dashboard(portfolio_name, weights, start_date, end_date):
     max_dd = dd.min()
 
     st.markdown("<hr>", unsafe_allow_html=True)
-    st.plotly_chart(line_scatter(close, close.columns, "Close Prices"), use_container_width=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
-    st.plotly_chart(line_scatter(cum_ret, cum_ret.columns, "Cumulative Returns"), use_container_width=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
-    st.plotly_chart(area_chart(dd, dd.columns, "Drawdown"), use_container_width=True)
+    g_cols = st.beta_columns(2)
+    g_cols[0].plotly_chart(line_scatter(close, close.columns, "Close Prices"), use_container_width=True)
+    g_cols[1].plotly_chart(line_scatter(cum_ret, cum_ret.columns, "Cumulative Returns"), use_container_width=True)
+    g_cols[0].plotly_chart(line_scatter(rets, rets.columns, "Volatility"), use_container_width=True)
+    g_cols[1].plotly_chart(area_chart(dd, dd.columns, "Drawdown"), use_container_width=True)
     st.markdown("<hr>", unsafe_allow_html=True)
 
-    info_cols = st.beta_columns(2)
+    info_cols = st.beta_columns(3)
     info_cols[0].plotly_chart(indicators(total_rets, "Portfolio", "Total Return"), use_container_width=True)
-    info_cols[1].plotly_chart(indicators(annualized_rets, "Portfolio", "Annualized Return"))
+    info_cols[1].plotly_chart(indicators(vol, "Portfolio", "Volatility"), use_container_width=True)
+    info_cols[2].plotly_chart(indicators(max_dd, "Portfolio", "Maximum Drawdown"), use_container_width=True)
 
-    info_cols[0].plotly_chart(indicators(vol, "Portfolio", "Volatility"), use_container_width=True)
-    info_cols[1].plotly_chart(indicators(annualized_vol, "Portfolio", "Annualized Volatility"))
+    info_cols[0].plotly_chart(indicators(annualized_rets, "Portfolio", "Annualized Return"), use_container_width=True)
+    info_cols[1].plotly_chart(indicators(annualized_vol, "Portfolio", "Annualized Volatility"), use_container_width=True)
+    info_cols[2].plotly_chart(indicators(shp, "Portfolio", "Sharpe", ""), use_container_width=True)
 
-    info_cols[0].plotly_chart(indicators(shp, "Portfolio", "Sharpe", ""), use_container_width=True)
-    info_cols[1].plotly_chart(indicators(max_dd, "Portfolio", "Maximum Drawdown"), use_container_width=True)
     st.markdown("<hr>", unsafe_allow_html=True)
 
 
