@@ -35,6 +35,9 @@ def dashboard(portfolio_name, weights, start_date, end_date):
     st.plotly_chart(line_scatter(close, close.columns, "Close Prices"), use_container_width=True)
     st.markdown("<hr>", unsafe_allow_html=True)
     st.plotly_chart(line_scatter(cum_ret, cum_ret.columns, "Cumulative Returns"), use_container_width=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.plotly_chart(area_chart(dd, dd.columns, "Drawdown"), use_container_width=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
 
     info_cols = st.beta_columns(2)
     info_cols[0].plotly_chart(indicators(total_rets, "Portfolio", "Total Return"), use_container_width=True)
@@ -45,8 +48,7 @@ def dashboard(portfolio_name, weights, start_date, end_date):
 
     info_cols[0].plotly_chart(indicators(shp, "Portfolio", "Sharpe", ""), use_container_width=True)
     info_cols[1].plotly_chart(indicators(max_dd, "Portfolio", "Maximum Drawdown"), use_container_width=True)
-
-    st.plotly_chart(area_chart(dd, dd.columns, "Drawdown"), use_container_width=True)
+    st.markdown("<hr>", unsafe_allow_html=True)
 
 
 portfolio_name = "Carteira Recomendada de Ações (10SIM) - JULHO 2021"
