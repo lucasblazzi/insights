@@ -43,7 +43,6 @@ def dashboard(portfolio_name, weights, start_date, end_date):
     info_cols[0].plotly_chart(indicators(vol, "Portfolio", "Volatility"), use_container_width=True)
     info_cols[1].plotly_chart(indicators(annualized_vol, "Portfolio", "Annualized Volatility"))
 
-    st.dataframe(shp)
     info_cols[0].plotly_chart(indicators(shp, "Portfolio", "Sharpe", ""), use_container_width=True)
     info_cols[1].plotly_chart(indicators(max_dd, "Portfolio", "Maximum Drawdown"), use_container_width=True)
 
