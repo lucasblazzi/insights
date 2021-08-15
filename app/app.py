@@ -34,9 +34,9 @@ def dashboard(portfolio_name, weights, start_date, end_date):
     st.markdown("<hr>", unsafe_allow_html=True)
     g_cols = st.beta_columns(2)
     g_cols[0].plotly_chart(line_scatter(close, close.columns, "Close Prices"), use_container_width=True)
-    g_cols[1].plotly_chart(line_scatter(cum_ret, cum_ret.columns, "Cumulative Returns"), use_container_width=True)
-    g_cols[0].plotly_chart(line_scatter(rets, rets.columns, "Volatility"), use_container_width=True)
-    g_cols[1].plotly_chart(area_chart(dd, dd.columns, "Drawdown"), use_container_width=True)
+    g_cols[1].plotly_chart(line_scatter(cum_ret*100, cum_ret.columns, "Cumulative Returns"), use_container_width=True)
+    g_cols[0].plotly_chart(line_scatter(rets*100, rets.columns, "Volatility"), use_container_width=True)
+    g_cols[1].plotly_chart(area_chart(dd*100, dd.columns, "Drawdown"), use_container_width=True)
     st.markdown("<hr>", unsafe_allow_html=True)
 
     info_cols = st.beta_columns(3)
