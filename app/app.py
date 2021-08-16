@@ -28,7 +28,6 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     portfolio_cum_ret = portfolio.cumulative_returns()
     portfolio_ret = portfolio.returns()
     portfolio_dd = portfolio.drawdown()
-    st.write(portfolio_dd)
     portfolio_total_rets = portfolio.total_returns()
     portfolio_vol = portfolio.volatility()
     portfolio_max_dd = portfolio_dd.min()
@@ -40,6 +39,7 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
 
     #portfolio_ef = portfolio.efficient_frontier()
     st.markdown("<hr>", unsafe_allow_html=True)
+    st.header("Basic Portfolio Time Series Measures")
     g_cols = st.beta_columns(2)
     g_cols[0].plotly_chart(line_scatter(close, close.columns, "Close Prices"), use_container_width=True)
     g_cols[1].plotly_chart(line_scatter(cum_ret*100, cum_ret.columns, "Cumulative Returns"), use_container_width=True)
@@ -47,19 +47,19 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     g_cols[1].plotly_chart(line_scatter(portfolio_cum_ret*100, [0], "Portfolio Cumulative Returns"), use_container_width=True)
     g_cols[0].plotly_chart(area_chart(portfolio_dd*100, [0], "Portfolio Drawdown"), use_container_width=True)
     g_cols[1].plotly_chart(correlation_matrix(portfolio_corr), use_container_width=True)
-    st.markdown("<hr>", unsafe_allow_html=True)
 
-    info_cols = st.beta_columns(3)
+    st.markdown("<hr>", unsafe_allow_html=True)
+    st.header("Basic Portfolio Macro Measures")
+    info_cols = st.beta_columns(6)
     info_cols[0].plotly_chart(indicators(portfolio_total_rets, title="Total Return"), use_container_width=True)
     info_cols[1].plotly_chart(indicators(portfolio_vol, title="Volatility"), use_container_width=True)
-    info_cols[2].plotly_chart(indicators(portfolio_max_dd, title="Maximum Drawdown"), use_container_width=True)
-
-    info_cols[0].plotly_chart(indicators(portfolio_annualized_rets, title="Annualized Return"), use_container_width=True)
-    info_cols[1].plotly_chart(indicators(portfolio_annualized_vol, title="Annualized Volatility"), use_container_width=True)
-    info_cols[2].plotly_chart(indicators(portfolio_shp, title="Sharpe", suffix=""), use_container_width=True)
+    info_cols[2].plotly_chart(indicators(portfolio_annualized_rets, title="Annualized Return"), use_container_width=True)
+    info_cols[3].plotly_chart(indicators(portfolio_annualized_vol, title="Annualized Volatility"), use_container_width=True)
+    info_cols[4].plotly_chart(indicators(portfolio_max_dd, title="Maximum Drawdown"), use_container_width=True)
+    info_cols[5].plotly_chart(indicators(portfolio_shp, title="Sharpe", suffix=""), use_container_width=True)
 
     st.markdown("<hr>", unsafe_allow_html=True)
-
+    st.header("Markowitz Portfolio Analysis")
 
 portfolio_name = "Carteira de Ações Anual - Demonstração (2020)"
 wights = ({"_id": "VALE3.SA", "proportion": 0.15},

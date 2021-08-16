@@ -74,14 +74,16 @@ def indicators(df, col=0, title="", suffix="%"):
     fig.add_trace(go.Indicator(
         mode="number",
         number={
-            "font": {"size": 60},
+            "font": {"size": 40},
             "suffix": suffix,
             "valueformat": format_val
         },
         value=value,
-        title=f"<span style='font-size:500;'><b>{'Portfolio' if col == 0 else col}</b></span><br>{title}"
+        title={"text": f"<span style='font-size:1.8em;color:black'><b>{title}</b></span>"}
     ))
-
+    fig.update_layout(
+        height=300,
+    )
     return fig
 
 
