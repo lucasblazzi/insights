@@ -1,6 +1,6 @@
 from utils.metrics import Product, Portfolio
 from utils.yahoo_finance import historical, simple_historical
-from utils.charts import line_scatter, indicators, area_chart, bar_chart
+from utils.charts import line_scatter, indicators, area_chart, bar_chart, correlation_matrix
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -28,6 +28,7 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     portfolio_cum_ret = portfolio.cumulative_returns()
     portfolio_ret = portfolio.returns()
     portfolio_dd = portfolio.drawdown()
+    st.write(portfolio_dd)
     portfolio_total_rets = portfolio.total_returns()
     portfolio_vol = portfolio.volatility()
     portfolio_max_dd = portfolio_dd.min()
@@ -35,7 +36,11 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     portfolio_annualized_rets = portfolio.annualized_returns()
     portfolio_annualized_vol = portfolio.annualized_volatility()
     portfolio_shp = portfolio.sharpe()
+    portfolio_corr = products.correlation()
 
+    st.write(portfolio_max_dd)
+    st.write(portfolio_shp)
+    #portfolio_ef = portfolio.efficient_frontier()
     st.markdown("<hr>", unsafe_allow_html=True)
     g_cols = st.beta_columns(2)
     g_cols[0].plotly_chart(line_scatter(close, close.columns, "Close Prices"), use_container_width=True)
@@ -43,6 +48,7 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     g_cols[0].plotly_chart(bar_chart(portfolio_ret*100, [0], "Portfolio Daily Returns"), use_container_width=True)
     g_cols[1].plotly_chart(line_scatter(portfolio_cum_ret*100, [0], "Portfolio Cumulative Returns"), use_container_width=True)
     g_cols[0].plotly_chart(area_chart(portfolio_dd*100, [0], "Portfolio Drawdown"), use_container_width=True)
+    g_cols[1].plotly_chart(correlation_matrix(portfolio_corr), use_container_width=True)
     st.markdown("<hr>", unsafe_allow_html=True)
 
     info_cols = st.beta_columns(3)
@@ -57,17 +63,17 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     st.markdown("<hr>", unsafe_allow_html=True)
 
 
-portfolio_name = "Carteira Recomendada de Ações (10SIM) - JULHO 2021"
+portfolio_name = "Carteira de Ações Anual - Demonstração (2020)"
 wights = ({"_id": "VALE3.SA", "proportion": 0.15},
           {"_id": "BBDC4.SA", "proportion": 0.10},
-          {"_id": "RDOR3.SA", "proportion": 0.10},
+          {"_id": "ITSA4.SA", "proportion": 0.10},
           {"_id": "LREN3.SA", "proportion": 0.10},
           {"_id": "CCRO3.SA", "proportion": 0.10},
           {"_id": "WEGE3.SA", "proportion": 0.10},
           {"_id": "PSSA3.SA", "proportion": 0.10},
           {"_id": "BRDT3.SA", "proportion": 0.10},
           {"_id": "CYRE3.SA", "proportion": 0.10},
-          {"_id": "OIBR3.SA", "proportion": 0.05})
+          {"_id": "EMBR3.SA", "proportion": 0.05})
 
 
-dashboard(portfolio_name, wights, "2021-07-01", "2021-07-31")
+dashboard(portfolio_name, wights, "2020-01-01", "2020-12-31")

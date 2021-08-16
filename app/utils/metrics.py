@@ -35,9 +35,9 @@ class Product:
         return excess_return / self.annualized_volatility()
 
     def drawdown(self):
-        cum_rets = self.cumulative_returns()
-        previous_peaks = cum_rets.cummax()
-        return ((cum_rets - previous_peaks) / previous_peaks).fillna(0)
+        wealth_index = self.returns().add(1).cumprod()
+        previous_peaks = wealth_index.cummax()
+        return ((wealth_index - previous_peaks) / previous_peaks).fillna(0)
 
     def skewness(self):
         rets = self.returns()
@@ -98,6 +98,9 @@ class Product:
                 (2*z**3 - 5*z)*(s**2)/36
             )
         return -(rets.mean() + z * rets.std(ddof=0))
+
+    def correlation(self):
+        return self.returns().corr()
 
 
 class Portfolio(Product):
