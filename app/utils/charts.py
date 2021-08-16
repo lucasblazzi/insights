@@ -63,6 +63,7 @@ def bar_chart(df, cols, title):
 def indicators(df, col=0, title="", suffix="%"):
     fig = go.Figure()
     multiplier = 100 if suffix == "%" else 1
+    format_val = ".2f" if suffix == "%" else ".4f"
     if isinstance(df, pd.DataFrame):
         value = df[col].values[0] * multiplier
     elif isinstance(df, pd.Series):
@@ -73,9 +74,9 @@ def indicators(df, col=0, title="", suffix="%"):
     fig.add_trace(go.Indicator(
         mode="number",
         number={
-            'font': {'size': 60},
-            'suffix': suffix,
-            "valueformat": ".2f"
+            "font": {"size": 60},
+            "suffix": suffix,
+            "valueformat": format_val
         },
         value=value,
         title=f"<span style='font-size:500;'><b>{'Portfolio' if col == 0 else col}</b></span><br>{title}"

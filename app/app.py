@@ -38,8 +38,6 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     portfolio_shp = portfolio.sharpe()
     portfolio_corr = products.correlation()
 
-    st.write(portfolio_max_dd)
-    st.write(portfolio_shp)
     #portfolio_ef = portfolio.efficient_frontier()
     st.markdown("<hr>", unsafe_allow_html=True)
     g_cols = st.beta_columns(2)
