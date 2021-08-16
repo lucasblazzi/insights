@@ -1,6 +1,6 @@
 from utils.metrics import Product, Portfolio
 from utils.yahoo_finance import historical, simple_historical
-from utils.charts import line_scatter, indicators, area_chart, bar_chart, correlation_matrix
+from utils.charts import line_scatter, indicators, area_chart, bar_chart, correlation_matrix, efficient_frontier_plot
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -36,8 +36,8 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     portfolio_annualized_vol = portfolio.annualized_volatility()
     portfolio_shp = portfolio.sharpe()
     portfolio_corr = products.correlation()
+    portfolio_ef = portfolio.efficient_frontier()
 
-    #portfolio_ef = portfolio.efficient_frontier()
     st.markdown("<hr>", unsafe_allow_html=True)
     st.header("Basic Portfolio Time Series Measures")
     g_cols = st.beta_columns(2)
@@ -60,6 +60,8 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
 
     st.markdown("<hr>", unsafe_allow_html=True)
     st.header("Markowitz Portfolio Analysis")
+    st.plotly_chart(efficient_frontier_plot(portfolio_ef), use_container_width=True)
+
 
 portfolio_name = "Carteira de Ações Anual - Demonstração (2020)"
 wights = ({"_id": "VALE3.SA", "proportion": 0.15},

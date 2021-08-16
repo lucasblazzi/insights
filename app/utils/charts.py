@@ -97,3 +97,23 @@ def correlation_matrix(df, title="Asset Correlation"):
         title=title
     )
     return fig
+
+
+def efficient_frontier_plot(df):
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=df["Volatility"], y=df["Returns"],
+                             mode='lines+markers',
+                             marker_color=px.colors.sequential.Viridis[3],
+                             hovertemplate=
+                             '<b>Volatility: </b> %{x:.4f}' +
+                             '<br><b>Returns: </b> %{y:.4f}<extra></extra>'
+                             ))
+
+    fig.update_layout(
+        hovermode="x unified",
+        height=500,
+        title="Markowitz Efficient Frontier",
+        xaxis_title="Volatility",
+        yaxis_title="Return"
+    )
+    return fig

@@ -117,8 +117,13 @@ class Portfolio(Product):
         cov_mat = self.product_rets.cov()
         return (self.weights.T @ cov_mat @ self.weights) ** 0.5
 
+    def annualized_rets_ef(self, periods_in_year=252):
+        compounded_growth = (1 + self.product_rets).prod()
+        n_periods = self.product_rets.shape[0]
+        return compounded_growth ** (periods_in_year / n_periods) - 1
+
     @staticmethod
-    def portfolio_volatility_ef(cov_mat, weights):
+    def portfolio_volatility_ef(weights, cov_mat):
         return (weights.T @ cov_mat @ weights) ** 0.5
 
     @staticmethod
@@ -152,8 +157,8 @@ class Portfolio(Product):
                            bounds=bounds)
         return results.x
 
-    def efficient_frontier(self, n_points=25):
-        er = self.annualized_returns()
+    def efficient_frontier(self, n_points=50):
+        er = self.annualized_rets_ef()
         cov = self.product_rets.cov()
         weights = self.optimal_weights(n_points, er, cov)
         rets = [self.portfolio_return_ef(w, er) for w in weights]
