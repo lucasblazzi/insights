@@ -15,8 +15,8 @@ def close_prices(_ids, start_date, end_date):
     return simple_historical(_ids, start_date, end_date)
 
 
-def dashboard(portfolio_name, proportions, start_date, end_date):
-    st.title(portfolio_name)
+def dashboard(proportions, start_date, end_date):
+    st.title("Portfolio Management")
     _ids = [p["_id"] for p in proportions]
     weights = np.array([p["proportion"] for p in proportions])
     close = close_prices(_ids, start_date, end_date)
@@ -62,18 +62,22 @@ def dashboard(portfolio_name, proportions, start_date, end_date):
     st.header("Markowitz Portfolio Analysis")
     st.plotly_chart(efficient_frontier_plot(portfolio_ef), use_container_width=True)
 
-
-portfolio_name = "Carteira de Ações Anual - Demonstração (2020)"
-wights = ({"_id": "VALE3.SA", "proportion": 0.15},
-          {"_id": "BBDC4.SA", "proportion": 0.10},
-          {"_id": "ITSA4.SA", "proportion": 0.10},
-          {"_id": "LREN3.SA", "proportion": 0.10},
-          {"_id": "CCRO3.SA", "proportion": 0.10},
-          {"_id": "WEGE3.SA", "proportion": 0.10},
-          {"_id": "PSSA3.SA", "proportion": 0.10},
-          {"_id": "BRDT3.SA", "proportion": 0.10},
-          {"_id": "CYRE3.SA", "proportion": 0.10},
-          {"_id": "EMBR3.SA", "proportion": 0.05})
+    for k, v in portfolio_ef.items():
+        if isinstance(v, list):
+            comp = [f"{ticker}: {round(weight * 100, 2)}%" for ticker, weight in zip(_ids, v)]
+            st.markdown(f"**{k} -** {comp}")
 
 
-dashboard(portfolio_name, wights, "2020-01-01", "2020-12-31")
+weights = ({"_id": "BABA34.SA", "proportion": 0.05},
+           {"_id": "GOGL34.SA", "proportion": 0.10},
+           {"_id": "ITSA4.SA", "proportion": 0.20},
+           {"_id": "MELI34.SA", "proportion": 0.15},
+           {"_id": "MUTC34.SA", "proportion": 0.05},
+           {"_id": "PSSA3.SA", "proportion": 0.15},
+           {"_id": "BTCR11.SA", "proportion": 0.05},
+           {"_id": "BTLG11.SA", "proportion": 0.05},
+           {"_id": "IRDM11.SA", "proportion": 0.05},
+           {"_id": "MXRF11.SA", "proportion": 0.15},)
+
+
+dashboard(weights, "2020-01-01", "2020-12-31")

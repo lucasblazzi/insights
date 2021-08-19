@@ -18,7 +18,8 @@ def line_scatter(df, cols, title):
     fig.update_layout(
         hovermode="x unified",
         height=500,
-        title=title
+        title=f"<b>{title}</b>",
+        title_x=0.5
     )
     return fig
 
@@ -38,7 +39,8 @@ def area_chart(df, cols, title):
     fig.update_layout(
         hovermode="x unified",
         height=500,
-        title=title
+        title=f"<b>{title}</b>",
+        title_x=0.5
     )
     return fig
 
@@ -55,7 +57,8 @@ def bar_chart(df, cols, title):
 
     fig.update_layout(
         height=500,
-        title=title
+        title=f"<b>{title}</b>",
+        title_x=0.5
     )
     return fig
 
@@ -88,32 +91,44 @@ def indicators(df, col=0, title="", suffix="%"):
 
 
 def correlation_matrix(df, title="Asset Correlation"):
-    values = df.round(2).values.tolist()
+    values = df.round(2).values.tolist()[::-1]
     cols = df.columns.tolist()
-    fig = ff.create_annotated_heatmap(values, x=cols, y=cols, annotation_text=values, colorscale='Viridis')
+    fig = ff.create_annotated_heatmap(values, x=cols, y=cols[::-1], annotation_text=values, colorscale='Viridis')
 
     fig.update_layout(
         height=500,
-        title=title
+        title=f"<b>{title}</b>",
+        title_x=0.5,
     )
     return fig
 
 
-def efficient_frontier_plot(df):
+def efficient_frontier_plot(data):
     fig = go.Figure()
-    fig.add_trace(go.Scatter(x=df["Volatility"], y=df["Returns"],
-                             mode='lines+markers',
-                             marker_color=px.colors.sequential.Viridis[3],
-                             hovertemplate=
-                             '<b>Volatility: </b> %{x:.4f}' +
-                             '<br><b>Returns: </b> %{y:.4f}<extra></extra>'
-                             ))
+    idx = 0
+    colors = ["#3CAEA3", "#20639B", "#FDBA21", "#E63946"]
+    for name, df in data.items():
+        if isinstance(df, pd.DataFrame):
+            df = df * 100
+            marker_size = 10 if df.shape[0] < 2 else 5
+            fig.add_trace(go.Scatter(x=df["Volatility"], y=df["Returns"],
+                                     mode='lines+markers',
+                                     marker=dict(size=marker_size, color=colors[idx]),
+                                     name=name,
+                                     hovertemplate=
+                                     '<b>Volatility (%): </b> %{x:.4f}' +
+                                     '<br><b>Return (%): </b> %{y:.4f}<extra></extra>'
+                                     ))
+            idx += 1
 
     fig.update_layout(
-        hovermode="x unified",
-        height=500,
-        title="Markowitz Efficient Frontier",
+        hovermode="y unified",
+        height=600,
+        title="<b>Markowitz Efficient Frontier</b>",
+        title_x=0.5,
         xaxis_title="Volatility",
         yaxis_title="Return"
     )
+    fig.update_yaxes(rangemode="tozero")
+    fig.update_xaxes(rangemode="tozero")
     return fig

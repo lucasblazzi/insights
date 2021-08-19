@@ -5,6 +5,9 @@ from scipy.stats import norm
 from scipy.optimize import minimize
 
 
+RISK_FREE_RATE = 0.03
+
+
 class Product:
     def __init__(self, close):
         self.close = close
@@ -30,8 +33,7 @@ class Product:
         return self.returns().std()
 
     def sharpe(self) -> pd.DataFrame:
-        risk_free_rate = 0.03
-        excess_return = self.annualized_returns() - risk_free_rate
+        excess_return = self.annualized_returns() - RISK_FREE_RATE
         return excess_return / self.annualized_volatility()
 
     def drawdown(self):
@@ -135,6 +137,32 @@ class Portfolio(Product):
         weights = [self.minimize_vol(target_ret, er, cov) for target_ret in target_rets]
         return weights
 
+    def msr(self, er, cov, risk_free_rate=RISK_FREE_RATE):
+        num_assets = er.shape[0]
+        init_guess = np.repeat(1 / num_assets, num_assets)
+        bounds = ((0.0, 1.0),) * num_assets
+
+        full_allocated = {
+            "type": "eq",
+            "fun": lambda weights: np.sum(weights) - 1
+        }
+
+        def neg_sharpe(weights, er, cov):
+            r = self.portfolio_return_ef(weights, er)
+            vol = self.portfolio_volatility_ef(weights, cov)
+            return -(r - risk_free_rate) / vol
+
+        weights = minimize(neg_sharpe, init_guess,
+                           args=(er, cov), method='SLSQP',
+                           options={'disp': False},
+                           constraints=(full_allocated,),
+                           bounds=bounds)
+        return weights.x
+
+    def global_minimum_variance(self, cov):
+        n = cov.shape[0]
+        return self.msr(np.repeat(1, n), cov, 0)
+
     def minimize_vol(self, target_ret, er, cov):
         n_assets = er.shape[0]
         init_guess = np.repeat(1 / n_assets, n_assets)
@@ -157,10 +185,36 @@ class Portfolio(Product):
                            bounds=bounds)
         return results.x
 
-    def efficient_frontier(self, n_points=50):
+    def efficient_frontier(self, n_points=50, cml=True, ew=True, gmv=True):
+        ef = dict()
         er = self.annualized_rets_ef()
         cov = self.product_rets.cov()
         weights = self.optimal_weights(n_points, er, cov)
         rets = [self.portfolio_return_ef(w, er) for w in weights]
         vols = [self.portfolio_volatility_ef(w, cov) for w in weights]
-        return pd.DataFrame({"Returns": rets, "Volatility": vols})
+        ef["Efficient Frontier (EF)"] = pd.DataFrame({"Returns": rets, "Volatility": vols})
+
+        num_assets = er.shape[0]
+
+        if cml:
+            weights_msr = self.msr(er, cov)
+            ret_msr = self.portfolio_return_ef(weights_msr, er)
+            vol_msr = self.portfolio_volatility_ef(weights_msr, cov)
+            ef["Capital Market Line (CML)"] = pd.DataFrame({"Returns": [RISK_FREE_RATE, ret_msr], "Volatility": [0, vol_msr]})
+            ef["CML Weights"] = weights_msr.tolist()
+
+        if ew:
+            weights_ew = np.repeat(1 / num_assets, num_assets)
+            rets_ew = self.portfolio_return_ef(weights_ew, er)
+            vol_ew = self.portfolio_volatility_ef(weights_ew, cov)
+            ef["Equally Weighted (EW)"] = pd.DataFrame({"Returns": [rets_ew], "Volatility": [vol_ew]})
+            ef["EW Weights"] = weights_ew.tolist()
+
+        if gmv:
+            weights_gmv = self.global_minimum_variance(cov)
+            rets_gmv = self.portfolio_return_ef(weights_gmv, er)
+            vol_gmv = self.portfolio_volatility_ef(weights_gmv, cov)
+            ef["Global Minimum Variance (GMV)"] = pd.DataFrame({"Returns": [rets_gmv], "Volatility": [vol_gmv]})
+            ef["GMV Weights"] = weights_gmv.tolist()
+
+        return ef
